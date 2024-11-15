@@ -7,7 +7,7 @@ entity random_generator is
     port(
         clk: in std_logic;                   
         reset: in std_logic;                 
-        stim: out std_logic_vector(11 downto 0)
+        stim: out integer
     );
 end random_generator;
 
@@ -15,13 +15,11 @@ architecture behaviour of random_generator is
 begin
     process(clk)
       variable seed1, seed2: positive;
-      variable rand: real;                       
-      variable int_rand: integer;                
+      variable rand: real;                                  
     begin
-        if clk = '1' then
+        if clk = '0' then
           uniform(seed1, seed2, rand);
-          int_rand := integer(trunc(rand * 14.0));
-          stim <= std_logic_vector(to_unsigned(int_rand, stim'length));
+          stim <= integer(trunc(rand * 14.0));
         end if;
     end process;
 end behaviour;
