@@ -13,7 +13,7 @@ end random_generator;
 
 architecture behaviour of random_generator is
 begin
-    process(clk, reset)
+    process(clk)
       variable seed1, seed2: positive;
       variable rand: real;                       
       variable int_rand: integer;                
