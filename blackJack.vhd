@@ -36,6 +36,7 @@ begin
                     stim => pickedCard
                 );
 
+                card <= std_logic_vector(to_unsigned(pickedCard, card'length)); -- Precisa converter para std_logic_vector
                 playerSUM <= playerSUM + pickedCard;
 
             end if;
