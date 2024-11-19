@@ -21,7 +21,7 @@ entity randomGenerator is
         ucard13: in integer;                           
         stim: out integer
     );
-end random_generator;
+end randomGenerator;
 
 architecture behaviour of randomGenerator is
 begin
@@ -32,6 +32,7 @@ begin
       variable generatedNumber: integer range 0 to 100;                              
     begin
         if clk = '0' then
+            search := '1';
             while search = '1' loop
                 uniform(seed1, seed2, rand);
                 generatedNumber := integer(trunc(rand * 14.0));
