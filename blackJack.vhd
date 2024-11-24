@@ -145,32 +145,53 @@ begin
                         stim => pickedCard
                     );
                     card <= std_logic_vector(to_unsigned(pickedCard, card'length)); -- Precisa converter para std_logic_vector
-                    DealerSUM := DealerSUM + pickedCard;
+                    if pickedCard > 10 then
+                        DealerSUM := DealerSUM + 10;
+                    elsif pickedCard = 1 then
+                        if DealerSUM < 12 then
+                            DealerSUM := DealerSUM + 10;
+                        else 
+                            DealerSUM := DealerSUM + 1;
+                        end if;
+                    else
+                        DealerSUM := DealerSUM + pickedCard;
+                    end if;
                     usedCard(pickedCard - 1) := usedCard(pickedCard - 1) + 1;
                 else 
-                    -- Precisamos ajustar o card, ele será um display de 7 segmentos e está recebendo uma variável de 4 bits
                     card <= std_logic_vector(to_unsigned(userCard, card'length)); -- Precisa converter para std_logic_vector
-                    DealerSUM := DealerSUM + to_integer(unsigned(userCard));
-                    usedCard(to_integer(unsigned(userCard)) - 1) := usedCard(to_integer(unsigned(userCard)) - 1) + 1;
+                    if to_integer(unsigned(userCard)) > 10 then
+                        DealerSUM := DealerSUM + 10;
+                    elsif to_integer(unsigned(userCard)) = 1 then
+                        if DealerSUM < 12 then
+                            DealerSUM := DealerSUM + 10;
+                        else 
+                            DealerSUM := DealerSUM + 1;
+                        end if;
+                    else
+                        DealerSUM := DealerSUM + to_integer(unsigned(userCard));
+                    end if;  
                 end if;
-            end if;
 
-            if (DealerSUM > 21) then
-                win <= '1';
-                tie <= '0';
-                lose <= '0';
-            end if;
+            elsif (DealerSUM <= 17) then
 
-            if (DealerSUM = PlayerSUM) then
-                win <= '0';
-                tie <= '1';
-                lose <= '0';
-            end if;
+                if (DealerSUM > 21) then
+                    win <= '1';
+                    tie <= '0';
+                    lose <= '0';
+                end if;
+    
+                if (DealerSUM = PlayerSUM) then
+                    win <= '0';
+                    tie <= '1';
+                    lose <= '0';
+                end if;
+    
+                if (PlayerSUM > DealerSUM) then
+                    win <= '1';
+                    tie <= '0';
+                    lose <= '0';
+                end if;
 
-            if (PlayerSUM > DealerSUM) then
-                win <= '1';
-                tie <= '0';
-                lose <= '0';
             end if;
         end if;
     end process;
