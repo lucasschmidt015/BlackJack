@@ -80,13 +80,32 @@ begin
                         stim => pickedCard
                     );
                     card <= std_logic_vector(to_unsigned(pickedCard, card'length)); -- Precisa converter para std_logic_vector
-                    playerSUM := playerSUM + pickedCard;
+                    if pickedCard > 10 then
+                        playerSUM := playerSUM + 10;
+                    elsif pickedCard = 1 then
+                        if playerSUM < 12 then
+                            playerSUM := playerSUM + 10;
+                        else 
+                            playerSUM := playerSUM + 1;
+                        end if;
+                    else
+                        playerSUM := playerSUM + pickedCard;
+                    end if;
                     usedCard(pickedCard - 1) := usedCard(pickedCard - 1) + 1;
                 else
                     card <= std_logic_vector(to_unsigned(userCard, card'length)); -- Precisa converter para std_logic_vector
-                    playerSUM := playerSUM + to_integer(unsigned(userCard));
-                end if;
-                
+                    if to_integer(unsigned(userCard)) > 10 then
+                       playerSUM := playerSUM + 10;
+                    elsif to_integer(unsigned(userCard)) = 1 then
+                        if playerSUM < 12 then
+                            playerSUM := playerSUM + 10;
+                        else 
+                            playerSUM := playerSUM + 1;
+                        end if;
+                    else
+                        playerSUM := playerSUM + to_integer(unsigned(userCard));
+                    end if;  
+                end if; 
             end if;
 
             if (playerSUM = 21) then
