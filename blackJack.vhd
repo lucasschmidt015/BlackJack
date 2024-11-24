@@ -56,6 +56,8 @@ begin
             win <= '0';
             tie <= '0';
             lose <= '0';
+            sun <= "0000000";
+            card <= "0000000";
         elsif (gameStarted = '1') then
 
             if ((clockCount = 0 OR clockCount = 1) AND clock = '0') then
@@ -89,26 +91,23 @@ begin
                 
             end if;
 
+            sun <= std_logic_vector(to_unsigned(playerSUM, sun'length)); -- Precisa converter para std_logic_vector
+
             if (playerSUM = 21) then
                 win <= '1';
                 tie <= '0';
                 lose <= '0';
-                
-                sun <= std_logic_vector(to_unsigned(playerSUM, sun'length)); -- Precisa converter para std_logic_vector
-
             elsif (playerSUM > 21) then
                 win <= '0';
                 tie <= '0';
                 lose <= '1';
-                sun <= std_logic_vector(to_unsigned(playerSUM, sun'length)); -- Precisa converter para std_logic_vector
             end if;
 
             -- Se passou daqui, começa a jogada do dealer
+            
 
-            if (clockCount = 2 OR clockCount = 3 AND clock = '0') then -- Precisamos verificar bem a lógica desse bloco, fiz na correria e não sei se está certo
+            if (DealerSUM <= 17 AND clock = '0') then -- Precisamos verificar bem a lógica desse bloco, fiz na correria e não sei se está certo
                 if(randonCards = '1')    then
-
-                    clockCount <= clockCount + 1;
                     rg2: randomGenerator port map(
                         clk => clock, 
                         ucard1 => usedCard(0),
@@ -130,11 +129,30 @@ begin
                     DealerSUM := DealerSUM + pickedCard;
                     usedCard(pickedCard - 1) := usedCard(pickedCard - 1) + 1;
                 else 
+                    -- Precisamos ajustar o card, ele será um display de 7 segmentos e está recebendo uma variável de 4 bits
                     card <= std_logic_vector(to_unsigned(userCard, card'length)); -- Precisa converter para std_logic_vector
                     DealerSUM := DealerSUM + to_integer(unsigned(userCard));
+                    usedCard(to_integer(unsigned(userCard)) - 1) := usedCard(to_integer(unsigned(userCard)) - 1) + 1;
                 end if;
             end if;
 
+            if (DealerSUM > 21) then
+                win <= '1';
+                tie <= '0';
+                lose <= '0';
+            end if;
+
+            if (DealerSUM = PlayerSUM) then
+                win <= '0';
+                tie <= '1';
+                lose <= '0';
+            end if;
+
+            if (PlayerSUM > DealerSUM) then
+                win <= '1';
+                tie <= '0';
+                lose <= '0';
+            end if;
         end if;
     end process;
 end behaviour;
