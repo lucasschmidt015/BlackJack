@@ -1,5 +1,7 @@
 library ieee;
 use ieee.std_logic_1164.all;
+use ieee.math_real.all;       
+use ieee.numeric_std.all;     
 
 entity blackJack is 
     port(
@@ -14,32 +16,29 @@ entity blackJack is
     );
 end blackJack;
 
--- It looks like it's not possible to use portmap within a process, this will break our logic. I think we can handle it in another way
 architecture behaviour of blackJack is 
-    component randomGenerator is
-        port(
-            clk: in std_logic;
-            ucard1: in integer;
-            ucard2: in integer;
-            ucard3: in integer;
-            ucard4: in integer;
-            ucard5: in integer;   
-            ucard6: in integer;
-            ucard7: in integer;
-            ucard8: in integer;
-            ucard9: in integer;
-            ucard10: in integer;
-            ucard11: in integer;
-            ucard12: in integer;
-            ucard13: in integer;   
-            stim: out integer
-        );
-    end component;
+    type integer_array is array (0 to 12) of integer;
+
+    function randomGenerator(ucards: in integer_array) return integer is 
+        variable seed1, seed2: positive;
+        variable rand: real;  
+        variable search: std_logic:= '1';  
+        variable generatedNumber: integer range 0 to 100;  
+    begin
+        while search = '1' loop
+            uniform(seed1, seed2, rand);
+            generatedNumber := integer(trunc(rand * 13.0)) + 1; 
+            if ucards(generatedNumber - 1) < 4 then
+                search := '0';
+            end if;
+        end loop;
+    
+        return generatedNumber; 
+    end function;
 
     signal clockCount: integer range 0 to 100 := 0;
-    signal gameStarted: sdt_logic := '0';
+    signal gameStarted: std_logic := '0';
     signal playerAcum, dealerAcum: integer range 0 to 100 := 0;
-    type integer_array is array (0 to 12) of integer;
     signal usedCardAcum: integer_array := (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
 
 begin
@@ -74,24 +73,8 @@ begin
 
                 clockCount <= clockCount + 1;  -- Lembrar que o valor só é atualizado no próximo ciclo
                 if(randonCards = '1')    then
-                    rg1: randomGenerator port map(
-                        clk => clock, 
-                        ucard1 => usedCard(0),
-                        ucard2 => usedCard(1),
-                        ucard3 => usedCard(2),
-                        ucard4 => usedCard(3),
-                        ucard5 => usedCard(4),   
-                        ucard6 => usedCard(5),
-                        ucard7 => usedCard(6),
-                        ucard8 => usedCard(7),
-                        ucard9 => usedCard(8),
-                        ucard10 => usedCard(9),
-                        ucard11 => usedCard(10),
-                        ucard12 => usedCard(11),
-                        ucard13 => usedCard(12),
-                        stim => pickedCard
-                    );
-                    card <= std_logic_vector(to_unsigned(pickedCard, card'length)); -- Precisa converter para std_logic_vector
+                    pickedCard := randomGenerator(usedCard);
+                    card <= std_logic_vector(to_unsigned(pickedCard, card'length)); -- No changes required
                     if pickedCard > 10 then
                         playerSUM := playerSUM + 10;
                     elsif pickedCard = 1 then
@@ -105,7 +88,7 @@ begin
                     end if;
                     usedCard(pickedCard - 1) := usedCard(pickedCard - 1) + 1;
                 else
-                    card <= std_logic_vector(to_unsigned(userCard, card'length)); -- Precisa converter para std_logic_vector
+                    card <= std_logic_vector(to_unsigned(to_integer(unsigned(userCard)), card'length)); -- Corrected for userCard
                     if to_integer(unsigned(userCard)) > 10 then
                        playerSUM := playerSUM + 10;
                     elsif to_integer(unsigned(userCard)) = 1 then
@@ -125,24 +108,8 @@ begin
             -- Player dando hit
             if (hit = '1') then
                 if(randonCards = '1')    then
-                    rg3: randomGenerator port map(
-                        clk => clock, 
-                        ucard1 => usedCard(0),
-                        ucard2 => usedCard(1),
-                        ucard3 => usedCard(2),
-                        ucard4 => usedCard(3),
-                        ucard5 => usedCard(4),   
-                        ucard6 => usedCard(5),
-                        ucard7 => usedCard(6),
-                        ucard8 => usedCard(7),
-                        ucard9 => usedCard(8),
-                        ucard10 => usedCard(9),
-                        ucard11 => usedCard(10),
-                        ucard12 => usedCard(11),
-                        ucard13 => usedCard(12),
-                        stim => pickedCard
-                    );
-                    card <= std_logic_vector(to_unsigned(pickedCard, card'length)); -- Precisa converter para std_logic_vector
+                    pickedCard := randomGenerator(usedCard);
+                    card <= std_logic_vector(to_unsigned(pickedCard, card'length)); -- No changes required
                     if pickedCard > 10 then
                         playerSUM := playerSUM + 10;
                     elsif pickedCard = 1 then
@@ -156,7 +123,7 @@ begin
                     end if;
                     usedCard(pickedCard - 1) := usedCard(pickedCard - 1) + 1;
                 else
-                    card <= std_logic_vector(to_unsigned(userCard, card'length)); -- Precisa converter para std_logic_vector
+                    card <= std_logic_vector(to_unsigned(to_integer(unsigned(userCard)), card'length)); -- Corrected for userCard
                     if to_integer(unsigned(userCard)) > 10 then
                        playerSUM := playerSUM + 10;
                     elsif to_integer(unsigned(userCard)) = 1 then
@@ -173,7 +140,7 @@ begin
 
             end if;
 
-            sun <= std_logic_vector(to_unsigned(playerSUM, sun'length)); -- Precisa converter para std_logic_vector
+            sun <= std_logic_vector(to_unsigned(playerSUM, sun'length)); -- No changes required
 
             if (playerSUM = 21) then
                 win <= '1';
@@ -190,25 +157,9 @@ begin
 
             if (stay = '1') then 
                 if (DealerSUM <= 17 AND clock = '0') then -- Precisamos verificar bem a lógica desse bloco, fiz na correria e não sei se está certo
-                    if(randonCards = '1')    then
-                        rg2: randomGenerator port map(
-                            clk => clock, 
-                            ucard1 => usedCard(0),
-                            ucard2 => usedCard(1),
-                            ucard3 => usedCard(2),
-                            ucard4 => usedCard(3),
-                            ucard5 => usedCard(4),   
-                            ucard6 => usedCard(5),
-                            ucard7 => usedCard(6),
-                            ucard8 => usedCard(7),
-                            ucard9 => usedCard(8),
-                            ucard10 => usedCard(9),
-                            ucard11 => usedCard(10),
-                            ucard12 => usedCard(11),
-                            ucard13 => usedCard(12),
-                            stim => pickedCard
-                        );
-                        card <= std_logic_vector(to_unsigned(pickedCard, card'length)); -- Precisa converter para std_logic_vector
+                    if(randonCards = '1') then
+                        pickedCard := randomGenerator(usedCard);
+                        card <= std_logic_vector(to_unsigned(pickedCard, card'length)); -- No changes required
                         if pickedCard > 10 then
                             DealerSUM := DealerSUM + 10;
                         elsif pickedCard = 1 then
@@ -222,7 +173,7 @@ begin
                         end if;
                         usedCard(pickedCard - 1) := usedCard(pickedCard - 1) + 1;
                     else 
-                        card <= std_logic_vector(to_unsigned(userCard, card'length)); -- Precisa converter para std_logic_vector
+                        card <= std_logic_vector(to_unsigned(to_integer(unsigned(userCard)), card'length)); -- Corrected for userCard
                         if to_integer(unsigned(userCard)) > 10 then
                             DealerSUM := DealerSUM + 10;
                         elsif to_integer(unsigned(userCard)) = 1 then
