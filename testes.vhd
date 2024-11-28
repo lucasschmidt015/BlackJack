@@ -120,16 +120,17 @@ architecture behaviour of blackJack is
         );
     end component;
 
-    variable playerSUM, DealerSUM: integer range 0 to 100 := 0; -- Precisa de um range pra FPGA entender
     signal clockCount: integer range 0 to 100 := 0;
     signal gameStarted: sdt_logic := '0';
-    variable pickedCard: integer range 0 to 100;
+    signal playerAcum, dealerAcum: integer range 0 to 100 := 0;
     type integer_array is array (0 to 12) of integer;
-    variable usedCard: integer_array := (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+    signal usedCardAcum: integer_array := (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
 
 begin
     process(clock, start) -- Lembrar de lidar com o caso onde o usuário começa a dar clock sem ter dado start
-    
+    variable pickedCard: integer range 0 to 100;
+    variable playerSUM, DealerSUM: integer range 0 to 100 := 0; -- Precisa de um range pra FPGA entender
+    variable usedCard: integer_array := (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
     begin
         if (start = '0') then 
             -- Reseta tudo
@@ -138,12 +139,20 @@ begin
             clockCount <= 0;
             playerSUM := 0;
             DealerSUM := 0;
+            playerAcum <= 0;
+            dealerAcum <= 0;
             win <= '0';
             tie <= '0';
             lose <= '0';
             sun <= "0000000";
             card <= "0000000";
+            usedCardAcum <= (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+
         elsif (gameStarted = '1') then
+
+            playerSUM := playerAcum;
+            DealerSUM := dealerAcum;
+            usedCard  := usedCardAcum;
 
             if ((clockCount = 0 OR clockCount = 1) AND clock = '0') then
 
@@ -192,10 +201,11 @@ begin
                     else
                         playerSUM := playerSUM + to_integer(unsigned(userCard));
                     end if;  
+                    playerAcum <= playerSUM;
                 end if; 
             end if;
 
-
+            --Parei de ver aqui, precisamos verificar para salvar os dados nos novos signals, já que as variaveis precisam ser internas ao process <----
             -- Player dando hit
             if (hit = '1') then
                 if(randonCards = '1')    then
@@ -333,7 +343,9 @@ begin
                 end if;
 
             end if;
-            
+            playerAcum <= PlayerSUM;
+            dealerAcum <= dealerSUM;
+            usedCardAcum <= usedCard;
         end if;
     end process;
 end behaviour;

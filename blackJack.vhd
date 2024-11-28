@@ -14,6 +14,7 @@ entity blackJack is
     );
 end blackJack;
 
+-- It looks like it's not possible to use portmap within a process, this will break our logic. I think we can handle it in another way
 architecture behaviour of blackJack is 
     component randomGenerator is
         port(
@@ -45,8 +46,6 @@ begin
     process(clock, start) -- Lembrar de lidar com o caso onde o usuário começa a dar clock sem ter dado start
     variable pickedCard: integer range 0 to 100;
     variable playerSUM, DealerSUM: integer range 0 to 100 := 0; -- Precisa de um range pra FPGA entender
-
-    type integer_array is array (0 to 12) of integer;
     variable usedCard: integer_array := (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
     begin
         if (start = '0') then 
@@ -66,6 +65,10 @@ begin
             usedCardAcum <= (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
 
         elsif (gameStarted = '1') then
+
+            playerSUM := playerAcum;
+            DealerSUM := dealerAcum;
+            usedCard  := usedCardAcum;
 
             if ((clockCount = 0 OR clockCount = 1) AND clock = '0') then
 
@@ -100,7 +103,6 @@ begin
                     else
                         playerSUM := playerSUM + pickedCard;
                     end if;
-                    playerAcum <= playerSUM;
                     usedCard(pickedCard - 1) := usedCard(pickedCard - 1) + 1;
                 else
                     card <= std_logic_vector(to_unsigned(userCard, card'length)); -- Precisa converter para std_logic_vector
@@ -120,7 +122,6 @@ begin
             end if;
 
             --Parei de ver aqui, precisamos verificar para salvar os dados nos novos signals, já que as variaveis precisam ser internas ao process <----
-
             -- Player dando hit
             if (hit = '1') then
                 if(randonCards = '1')    then
@@ -258,7 +259,9 @@ begin
                 end if;
 
             end if;
-            
+            playerAcum <= PlayerSUM;
+            dealerAcum <= dealerSUM;
+            usedCardAcum <= usedCard;
         end if;
     end process;
 end behaviour;
