@@ -31,9 +31,11 @@ architecture behaviour of blackJack is
         variable seed1, seed2: positive;
         variable rand: real;  
         variable search: std_logic:= '1';  
-        variable generatedNumber: integer range 0 to 100;  
+        variable generatedNumber: integer range 0 to 100; 
+        variable contador: integer range 0 to 100 := 0;
     begin
-        while search = '1' loop
+        while search = '1' or contador < 100 loop
+            contador := contador + 1;
             uniform(seed1, seed2, rand);
             generatedNumber := integer(trunc(rand * 13.0)) + 1; 
             if ucards(generatedNumber - 1) < 4 then
