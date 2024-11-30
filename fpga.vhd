@@ -5,19 +5,11 @@ use ieee.numeric_std.all;
 
 entity blackJack is 
     port(
-        --start, hit, stay: in std_logic;
-        sw: in std_logic_vector(9 downto 0); -- hit = 9 | stay = 8  | randonCards = 7 
+       
+        sw: in std_logic_vector(9 downto 0); -- hit = 9 | stay = 8  | randonCards = 7  | Card: 3 2 1 0
         key: in std_logic_vector(3 downto 0); -- start = 3 | clock = 2 
-        -- clock: in std_logic;
-
-        -- randonCards: in std_logic;
-        -- userCard: out std_logic_vector(3 downto 0); -- 3 2 1 0
-        
-        -- card: out std_logic_vector(6 downto 0);
-        -- sun: out std_logic_vector(6 downto 0);
-        -- win, tie, lose: out std_logic -- Win = 2 | tie = 1 | lose = 0 
-
-        ledr: out std_logic_vector(9 downto 0);
+    
+        ledr: out std_logic_vector(9 downto 0); -- Win = 2 | tie = 1 | lose = 0 
         hex3: out std_logic_vector(6 downto 0); -- carta
         hex1: out std_logic_vector(6 downto 0); -- Decimal Soma;
         hex0: out std_logic_vector(6 downto 0)  -- Numeral Soma;
@@ -50,33 +42,47 @@ architecture behaviour of blackJack is
         variable numberforDisplay: std_logic_vector(6 downto 0) := "1111110";  
     begin
          if pickedCard = 1 then 
-            numberforDisplay:="0110000";
+            -- numberforDisplay:="0110000";
+            numberforDisplay:="1001111";
          elsif pickedCard = 2 then
-            numberforDisplay:="1101101";
+            -- numberforDisplay:="1101101";
+            numberforDisplay:="0010010";
         elsif pickedCard = 3 then
-            numberforDisplay:="1111001";
+            -- numberforDisplay:="1111001";
+            numberforDisplay:="0000110";
         elsif pickedCard = 4 then
-            numberforDisplay:="0110011";
+            -- numberforDisplay:="0110011";
+            numberforDisplay:="1001100";
         elsif pickedCard = 5 then
-             numberforDisplay:="1011011";
+            --  numberforDisplay:="1011011";
+             numberforDisplay:="0100100";
         elsif pickedCard = 6 then 
-             numberforDisplay:="1011111";
+            --  numberforDisplay:="1011111";
+             numberforDisplay:="0100000";
         elsif pickedCard = 7 then
-            numberforDisplay:="1110000";
+            -- numberforDisplay:="1110000";
+            numberforDisplay:="0001111";
         elsif pickedCard = 8 then
-            numberforDisplay:="1111111";
+            -- numberforDisplay:="1111111";
+            numberforDisplay:="0000000";
         elsif pickedCard = 9 then
-            numberforDisplay:="1111011";
+            -- numberforDisplay:="1111011";
+            numberforDisplay:="0000100";
         elsif pickedCard = 10 then
-            numberforDisplay:="1110111";
+            -- numberforDisplay:="1110111";
+            numberforDisplay:="0001000";
         elsif pickedCard = 11 then
-            numberforDisplay:="0011111";
+            -- numberforDisplay:="0011111";
+            numberforDisplay:="1100000";
         elsif pickedCard = 12 then
-            numberforDisplay:="1001110";
+            -- numberforDisplay:="1001110";
+            numberforDisplay:="0110001";
         elsif pickedCard = 13 then
-             numberforDisplay:="0111101";
+            --  numberforDisplay:="0111101";
+             numberforDisplay:="1000010";
          else 
-            numberforDisplay:="1111110";
+            -- numberforDisplay:="1111110";
+            numberforDisplay:="0000001";
         end if;
         return numberforDisplay;
     end function;
@@ -86,90 +92,125 @@ architecture behaviour of blackJack is
       variable numberSumDezenasForDisplay: std_logic_vector(6 downto 0) := "1111110";  
       begin
         if playerSUM < 10 then
-            numberSumDezenasForDisplay:="1111110";
+            -- numberSumDezenasForDisplay:="1111110";
+            numberSumDezenasForDisplay:="0000001";
          elsif playerSUM >= 10 and playerSUM < 19 then
-            numberSumDezenasForDisplay:="0110000";
+            -- numberSumDezenasForDisplay:="0110000";
+            numberSumDezenasForDisplay:="1001111";
         elsif playerSUM  >= 20 and playerSUM < 29 then
-            numberSumDezenasForDisplay:="1101101";
+            -- numberSumDezenasForDisplay:="1101101";
+            numberSumDezenasForDisplay:="0010010";
         else --No processo principal nunca dará esse else por irá acusar derrota ao ter soma > 21
-            numberSumDezenasForDisplay:="1111110";
+            -- numberSumDezenasForDisplay:="1111110";
+            numberSumDezenasForDisplay:="0000001";
         end if;  
         return numberSumDezenasForDisplay;   
     end function;
     ---------------------------------------------------------------------------------------------------
 
     --Essa função retorna o segundo algarismo do número, no caso se for 21, retorna 1.
-    function numberSumUnidades(playerSUM: in integer) return STD_LOGIC_VECTOR is 
+    function numberSumUnidades(playerSUM: in integer) return STD_LOGIC_VECTOR is -- Already correct
         variable numberSumUnidadesForDisplay: std_logic_vector(6 downto 0) := "1111110";  
     begin
             if playerSUM < 10 then
                if playerSUM = 1 then 
-                   numberSumUnidadesForDisplay:="0110000";
+                --    numberSumUnidadesForDisplay:="0110000";
+                   numberSumUnidadesForDisplay:="1001111";
                elsif playerSUM = 2 then
-                   numberSumUnidadesForDisplay:="1101101";
+                --    numberSumUnidadesForDisplay:="1101101";
+                   numberSumUnidadesForDisplay:="0010010";
                elsif playerSUM = 3 then
-                   numberSumUnidadesForDisplay:="1111001";
+                --    numberSumUnidadesForDisplay:="1111001";
+                   numberSumUnidadesForDisplay:="0000110";
                elsif playerSUM = 4 then
-                   numberSumUnidadesForDisplay:="0110011";
+                --    numberSumUnidadesForDisplay:="0110011";
+                   numberSumUnidadesForDisplay:="1001100";
                elsif playerSUM = 5 then
-                   numberSumUnidadesForDisplay:="1011011";
+                --    numberSumUnidadesForDisplay:="1011011";
+                   numberSumUnidadesForDisplay:="0100100";
                elsif playerSUM = 6 then 
-                   numberSumUnidadesForDisplay:="1011111";
+                --    numberSumUnidadesForDisplay:="1011111";
+                   numberSumUnidadesForDisplay:="0100000";
                elsif playerSUM = 7 then
-                   numberSumUnidadesForDisplay:="1110000";
+                --    numberSumUnidadesForDisplay:="1110000";
+                   numberSumUnidadesForDisplay:="0001111";
                elsif playerSUM = 8 then
-                   numberSumUnidadesForDisplay:="1111111";
+                --    numberSumUnidadesForDisplay:="1111111";
+                   numberSumUnidadesForDisplay:="0000000";
                elsif playerSUM = 9 then
-                   numberSumUnidadesForDisplay:="1111011";
+                --    numberSumUnidadesForDisplay:="1111011";
+                   numberSumUnidadesForDisplay:="0000100";
                else 
-                   numberSumUnidadesForDisplay:="1111110";
+                --    numberSumUnidadesForDisplay:="1111110";
+                   numberSumUnidadesForDisplay:="0000001";
                end if;
             elsif playerSUM >= 10 and playerSUM < 19 then
                if (playerSUM - 10) = 1 then 
-                   numberSumUnidadesForDisplay:="0110000";
+                --    numberSumUnidadesForDisplay:="1001111"; 
+                   numberSumUnidadesForDisplay:="0110000"; 
                elsif (playerSUM - 10) = 2 then
-                   numberSumUnidadesForDisplay:="1101101";
+                --    numberSumUnidadesForDisplay:="1101101";
+                   numberSumUnidadesForDisplay:="0010010";
                elsif (playerSUM - 10) = 3 then
-                   numberSumUnidadesForDisplay:="1111001";
+                --    numberSumUnidadesForDisplay:="1111001";
+                   numberSumUnidadesForDisplay:="0000110";
                elsif (playerSUM - 10) = 4 then
-                   numberSumUnidadesForDisplay:="0110011";
+                --    numberSumUnidadesForDisplay:="0110011";
+                   numberSumUnidadesForDisplay:="1001100";
                elsif (playerSUM - 10) = 5 then
-                   numberSumUnidadesForDisplay:="1011011";
+                   numberSumUnidadesForDisplay:="0100100";
+                --    numberSumUnidadesForDisplay:="1011011";
                elsif (playerSUM - 10) = 6 then 
-                   numberSumUnidadesForDisplay:="1011111";
+                --    numberSumUnidadesForDisplay:="1011111";
+                   numberSumUnidadesForDisplay:="0100000";
                elsif (playerSUM - 10) = 7 then
-                   numberSumUnidadesForDisplay:="1110000";
+                --    numberSumUnidadesForDisplay:="1110000";
+                   numberSumUnidadesForDisplay:="0001111";
                elsif (playerSUM - 10) = 8 then
-                   numberSumUnidadesForDisplay:="1111111";
+                --    numberSumUnidadesForDisplay:="1111111";
+                   numberSumUnidadesForDisplay:="0000000";
                elsif (playerSUM - 10) = 9 then
-                   numberSumUnidadesForDisplay:="1111011";
+                --    numberSumUnidadesForDisplay:="1111011";
+                   numberSumUnidadesForDisplay:="0000100";
                else 
-                   numberSumUnidadesForDisplay:="1111110";
+                --    numberSumUnidadesForDisplay:="1111110";
+                   numberSumUnidadesForDisplay:="0000001";
                end if;
            elsif playerSUM  >= 20 and playerSUM < 29 then
                if (playerSUM - 20) = 1 then 
-                   numberSumUnidadesForDisplay:="0110000";
+                --    numberSumUnidadesForDisplay:="0110000";
+                   numberSumUnidadesForDisplay:="1001111";
                elsif (playerSUM - 20) = 2 then
-                   numberSumUnidadesForDisplay:="1101101";
+                --    numberSumUnidadesForDisplay:="1101101";
+                   numberSumUnidadesForDisplay:="0010010";
                elsif (playerSUM - 20) = 3 then
-                   numberSumUnidadesForDisplay:="1111001";
+                --    numberSumUnidadesForDisplay:="1111001";
+                   numberSumUnidadesForDisplay:="0000110";
                elsif (playerSUM - 20) = 4 then
-                   numberSumUnidadesForDisplay:="0110011";
+                --    numberSumUnidadesForDisplay:="0110011";
+                   numberSumUnidadesForDisplay:="1001100";
                elsif (playerSUM - 20) = 5 then
-                   numberSumUnidadesForDisplay:="1011011";
+                --    numberSumUnidadesForDisplay:="1011011";
+                   numberSumUnidadesForDisplay:="0100100";
                elsif (playerSUM - 20) = 6 then 
-                   numberSumUnidadesForDisplay:="1011111";
+                --    numberSumUnidadesForDisplay:="1011111";
+                   numberSumUnidadesForDisplay:="0100000";
                elsif (playerSUM - 20) = 7 then
-                   numberSumUnidadesForDisplay:="1110000";
+                --    numberSumUnidadesForDisplay:="1110000";
+                   numberSumUnidadesForDisplay:="0001111";
                elsif (playerSUM - 20) = 8 then
-                   numberSumUnidadesForDisplay:="1111111";
+                --    numberSumUnidadesForDisplay:="1111111";
+                   numberSumUnidadesForDisplay:="0000000";
                elsif (playerSUM - 20) = 9 then
-                   numberSumUnidadesForDisplay:="1111011";
+                --    numberSumUnidadesForDisplay:="1111011";
+                   numberSumUnidadesForDisplay:="0000100";
                else 
-                   numberSumUnidadesForDisplay:="1111110";
+                --    numberSumUnidadesForDisplay:="1111110";
+                   numberSumUnidadesForDisplay:="0000001";
                end if;
            else --No processo principal nunca dará esse else por irá acusar derrota ao ter soma > 21
-               numberSumUnidadesForDisplay:="1111110";
+            --    numberSumUnidadesForDisplay:="1111110";
+               numberSumUnidadesForDisplay:="0000001";
            end if;  
            return numberSumUnidadesForDisplay; 
     end function;
@@ -199,9 +240,12 @@ begin
             ledr(2) <= '0';
             ledr(1) <= '0';
             ledr(0) <= '0';
-            hex1 <= "0000000";
-            hex0 <= "0000000";
-            hex3 <= "0000000";
+            -- hex1 <= "0000000";
+            -- hex0 <= "0000000";
+            -- hex3 <= "0000000";
+            hex1 <= "1111111";
+            hex0 <= "1111111";
+            hex3 <= "1111111";
             usedCardAcum <= (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
 
         elsif (gameStarted = '1') then
