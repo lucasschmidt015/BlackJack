@@ -242,7 +242,6 @@ begin
             ledr(2) <= '0';
             ledr(1) <= '0';
             ledr(0) <= '0';
-            -- ledr(9) <= '1';
 
             -- hex1 <= "0000000";
             -- hex0 <= "0000000";
@@ -251,8 +250,7 @@ begin
             hex0 <= "1111111";
             hex3 <= "1111111";
             usedCardAcum <= (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-        end if;
-        -- elsif (gameStarted = '1') then
+        elsif (gameStarted = '1') then
             
             playerSUM := playerAcum;
             DealerSUM := dealerAcum;
@@ -404,7 +402,7 @@ begin
             playerAcum <= PlayerSUM;
             dealerAcum <= dealerSUM;
             usedCardAcum <= usedCard;
-        -- end if;
+        end if;
     end process;
 end behaviour;
 
