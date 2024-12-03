@@ -230,7 +230,7 @@ begin
     variable playerSUM, DealerSUM: integer range 0 to 100 := 0; -- Precisa de um range pra FPGA entender
     variable usedCard: integer_array := (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
     begin
-        if (key(3) = '0') then 
+        if (key(3) = '1') then 
             -- Reseta tudo
             gameStarted <= '1';
             pickedCard := 0;
@@ -239,9 +239,9 @@ begin
             DealerSUM := 0;
             playerAcum <= 0;
             dealerAcum <= 0;
-            ledr(2) <= '0';
-            ledr(1) <= '0';
-            ledr(0) <= '0';
+            ledr(2) <= '1';
+            ledr(1) <= '1';
+            ledr(0) <= '1';
 
             -- hex1 <= "0000000";
             -- hex0 <= "0000000";
@@ -256,10 +256,10 @@ begin
             DealerSUM := dealerAcum;
             usedCard  := usedCardAcum;
 
-            if ((clockCount = 0 OR clockCount = 1) AND key(2) = '0') then
+            if ((clockCount = 0 OR clockCount = 1) AND key(2) = '1') then
                 clockCount <= clockCount + 1;  -- Lembrar que o valor só é atualizado no próximo ciclo
-                if(sw(7) = '0')    then
-                    ledr(9) <= '1';
+                if(sw(7) = '1')    then
+                    ledr(9) <= '0';
                     pickedCard := randomGenerator(usedCard);
                     hex3 <= numberDisplayCard(pickedCard);
                     if pickedCard > 10 then
@@ -293,8 +293,8 @@ begin
             end if;
             
             -- Player dando hit
-            if (sw(9) = '0') then
-                if(sw(7) = '0')    then
+            if (sw(9) = '1') then
+                if(sw(7) = '1')    then
                     pickedCard := randomGenerator(usedCard);
                     -- card <= std_logic_vector(to_unsigned(pickedCard, card'length)); -- No changes required
                     hex3 <= numberDisplayCard(pickedCard);
@@ -333,20 +333,20 @@ begin
             hex1 <= numberSumDezenas(playerSUM);
 
             if (playerSUM = 21) then
-                ledr(2) <= '1'; -- Win
-                ledr(1) <= '0'; -- Tie
-                ledr(0) <= '0'; -- Lose
+                ledr(2) <= '0'; -- Win
+                ledr(1) <= '1'; -- Tie
+                ledr(0) <= '1'; -- Lose
             elsif (playerSUM > 21) then
-                ledr(2) <= '0';
-                ledr(1) <= '0';
-                ledr(0) <= '1';
+                ledr(2) <= '1';
+                ledr(1) <= '1';
+                ledr(0) <= '0';
             end if;
 
             -- Se passou daqui, começa a jogada do dealer
 
-            if (sw(8) = '0') then 
-                if (DealerSUM <= 17 AND key(2) = '0') then -- Precisamos verificar bem a lógica desse bloco, fiz na correria e não sei se está certo
-                    if(sw(7) = '0') then
+            if (sw(8) = '1') then 
+                if (DealerSUM <= 17 AND key(2) = '1') then -- Precisamos verificar bem a lógica desse bloco, fiz na correria e não sei se está certo
+                    if(sw(7) = '1') then
                         pickedCard := randomGenerator(usedCard);
                         hex3 <= numberDisplayCard(pickedCard);
                         
@@ -380,21 +380,21 @@ begin
                 elsif (DealerSUM <= 17) then
 
                     if (DealerSUM > 21) then
-                        ledr(2) <= '1';
-                        ledr(1) <= '0';
-                        ledr(0) <= '0';
+                        ledr(2) <= '0';
+                        ledr(1) <= '1';
+                        ledr(0) <= '1';
                     end if;
         
                     if (DealerSUM = PlayerSUM) then
-                        ledr(2) <= '0';
-                        ledr(1) <= '1';
-                        ledr(0) <= '0';
+                        ledr(2) <= '1';
+                        ledr(1) <= '0';
+                        ledr(0) <= '1';
                     end if;
         
                     if (PlayerSUM > DealerSUM) then
-                        ledr(2) <= '1';
-                        ledr(1) <= '0';
-                        ledr(0) <= '0';
+                        ledr(2) <= '0';
+                        ledr(1) <= '1';
+                        ledr(0) <= '1';
                     end if;
 
                 end if;
