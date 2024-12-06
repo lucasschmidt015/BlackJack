@@ -26,3 +26,25 @@ begin
         end if;
     end process;
 end behaviour;
+
+
+            function slv_to_int(input_vector: std_logic_vector(3 downto 0)) return integer is
+    variable int_value : integer;
+begin
+    case input_vector is
+        when "0001" => return 1;
+        when "0010" => return 2;
+        when "0011" => return 3;
+        when "0100" => return 4;
+        when "0101" => return 5;
+        when "0110" => return 6;
+        when "0111" => return 7;
+        when "1000" => return 8;
+        when "1001" => return 9;
+        when "1010" => return 10;
+        when "1011" => return 11;
+        when "1100" => return 12;
+        when "1101" => return 13;
+        when others => return 0; -- Caso indesejado ou erro
+    end case;
+end function;
