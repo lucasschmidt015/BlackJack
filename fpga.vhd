@@ -1,3 +1,5 @@
+
+
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.math_real.all;       
@@ -6,8 +8,8 @@ use ieee.numeric_std.all;
 entity blackJack is 
     port(
        
-        sw: in std_logic_vector(9 downto 0); -- hit = 9 | stay = 8  | randonCards = 7  | Card: 3 2 1 0
-        key: in std_logic_vector(3 downto 0); -- start = 3 | clock = 2 
+        sw: in std_logic_vector(9 downto 0); -- hit = 9 | stay = 8  | Card: 3 2 1 0
+        key: in std_logic_vector(3 downto 0); -- key(2) = reset | key(3) = clk
     
         ledr: out std_logic_vector(9 downto 0); -- Win = 2 | tie = 1 | lose = 0 
         hex3: out std_logic_vector(6 downto 0); -- carta
@@ -31,7 +33,7 @@ architecture behaviour of blackJack is
         while search = '1' and contador < 100 loop
             contador := contador + 1;
             uniform(seed1, seed2, rand);
-            generatedNumber := integer(trunc(rand * 13.0)) + 1; 
+            generatedNumber := integer(trunc(rand * 7.0)) + 1; 
             if ucards(generatedNumber - 1) < 4 then
                 search := '0';
             end if;
@@ -43,369 +45,245 @@ architecture behaviour of blackJack is
     function numberDisplayCard(pickedCard: in integer) return STD_LOGIC_VECTOR is 
         variable numberforDisplay: std_logic_vector(6 downto 0) := "1111110";  
     begin
-         if pickedCard = 1 then 
-            -- numberforDisplay:="0110000";
-            numberforDisplay:="1001111";
+         if pickedCard = 1 then
+            numberforDisplay:="1111001";
          elsif pickedCard = 2 then
-            -- numberforDisplay:="1101101";
-            numberforDisplay:="0010010";
+            numberforDisplay:="0100100";
         elsif pickedCard = 3 then
-            -- numberforDisplay:="1111001";
-            numberforDisplay:="0000110";
+            numberforDisplay:="0110000";
         elsif pickedCard = 4 then
-            -- numberforDisplay:="0110011";
-            numberforDisplay:="1001100";
+            numberforDisplay:="0011001";
         elsif pickedCard = 5 then
-            --  numberforDisplay:="1011011";
-             numberforDisplay:="0100100";
+             numberforDisplay:="0010010";
         elsif pickedCard = 6 then 
-            --  numberforDisplay:="1011111";
-             numberforDisplay:="0100000";
+             numberforDisplay:="0000010";
         elsif pickedCard = 7 then
-            -- numberforDisplay:="1110000";
-            numberforDisplay:="0001111";
+            numberforDisplay:="1111000";
         elsif pickedCard = 8 then
-            -- numberforDisplay:="1111111";
             numberforDisplay:="0000000";
         elsif pickedCard = 9 then
-            -- numberforDisplay:="1111011";
-            numberforDisplay:="0000100";
+            numberforDisplay:="0010000";
         elsif pickedCard = 10 then
-            -- numberforDisplay:="1110111";
             numberforDisplay:="0001000";
         elsif pickedCard = 11 then
-            -- numberforDisplay:="0011111";
-            numberforDisplay:="1100000";
+			numberforDisplay:="0000011";
         elsif pickedCard = 12 then
-            -- numberforDisplay:="1001110";
-            numberforDisplay:="0110001";
+            numberforDisplay:="1000110";
         elsif pickedCard = 13 then
-            --  numberforDisplay:="0111101";
-             numberforDisplay:="1000010";
+            numberforDisplay:="0100001";
          else 
-            -- numberforDisplay:="1111110";
-            numberforDisplay:="0000001";
+            numberforDisplay:="1000000";
         end if;
         return numberforDisplay;
     end function;
-   ----------------------------------------------------------------------
+
     --Essa função retorna o primeiro algarismo das dezenas do número, no caso se for 21, retorna 2.
     function numberSumDezenas(playerSUM: in integer) return STD_LOGIC_VECTOR is 
       variable numberSumDezenasForDisplay: std_logic_vector(6 downto 0) := "1111110";  
       begin
         if playerSUM < 10 then
-            -- numberSumDezenasForDisplay:="1111110";
-            numberSumDezenasForDisplay:="0000001";
-         elsif playerSUM >= 10 and playerSUM < 19 then
-            -- numberSumDezenasForDisplay:="0110000";
-            numberSumDezenasForDisplay:="1001111";
+            numberSumDezenasForDisplay:="1000000";
+         elsif playerSUM >= 10 and playerSUM < 19 then            
+			numberSumDezenasForDisplay:="1111001";
         elsif playerSUM  >= 20 and playerSUM < 29 then
-            -- numberSumDezenasForDisplay:="1101101";
-            numberSumDezenasForDisplay:="0010010";
-        else --No processo principal nunca dará esse else por irá acusar derrota ao ter soma > 21
-            -- numberSumDezenasForDisplay:="1111110";
-            numberSumDezenasForDisplay:="0000001";
+			numberSumDezenasForDisplay:="0100100";
+        else 
+			numberSumDezenasForDisplay:="1000000";
         end if;  
         return numberSumDezenasForDisplay;   
     end function;
-    ---------------------------------------------------------------------------------------------------
 
     --Essa função retorna o segundo algarismo do número, no caso se for 21, retorna 1.
-    function numberSumUnidades(playerSUM: in integer) return STD_LOGIC_VECTOR is -- Already correct
+    function numberSumUnidades(playerSUM: in integer) return STD_LOGIC_VECTOR is 
         variable numberSumUnidadesForDisplay: std_logic_vector(6 downto 0) := "1111110";  
-    begin
+        begin
             if playerSUM < 10 then
                if playerSUM = 1 then 
-                --    numberSumUnidadesForDisplay:="0110000";
-                   numberSumUnidadesForDisplay:="1001111";
+                    numberSumUnidadesForDisplay:="1111001";
                elsif playerSUM = 2 then
-                --    numberSumUnidadesForDisplay:="1101101";
-                   numberSumUnidadesForDisplay:="0010010";
+                    numberSumUnidadesForDisplay:="0100100";
                elsif playerSUM = 3 then
-                --    numberSumUnidadesForDisplay:="1111001";
-                   numberSumUnidadesForDisplay:="0000110";
+                    numberSumUnidadesForDisplay:="0110000";
                elsif playerSUM = 4 then
-                --    numberSumUnidadesForDisplay:="0110011";
-                   numberSumUnidadesForDisplay:="1001100";
+                    numberSumUnidadesForDisplay:="0011001";
                elsif playerSUM = 5 then
-                --    numberSumUnidadesForDisplay:="1011011";
-                   numberSumUnidadesForDisplay:="0100100";
+                    numberSumUnidadesForDisplay:="0010010";
                elsif playerSUM = 6 then 
-                --    numberSumUnidadesForDisplay:="1011111";
-                   numberSumUnidadesForDisplay:="0100000";
+                    numberSumUnidadesForDisplay:="0000010";
                elsif playerSUM = 7 then
-                --    numberSumUnidadesForDisplay:="1110000";
-                   numberSumUnidadesForDisplay:="0001111";
+                    numberSumUnidadesForDisplay:="1111000";
                elsif playerSUM = 8 then
-                --    numberSumUnidadesForDisplay:="1111111";
-                   numberSumUnidadesForDisplay:="0000000";
+                    numberSumUnidadesForDisplay:="0000000";
                elsif playerSUM = 9 then
-                --    numberSumUnidadesForDisplay:="1111011";
-                   numberSumUnidadesForDisplay:="0000100";
+                    numberSumUnidadesForDisplay:="0010000";
                else 
-                --    numberSumUnidadesForDisplay:="1111110";
-                   numberSumUnidadesForDisplay:="0000001";
+                    numberSumUnidadesForDisplay:="1000000";
                end if;
             elsif playerSUM >= 10 and playerSUM < 19 then
                if (playerSUM - 10) = 1 then 
-                --    numberSumUnidadesForDisplay:="1001111"; 
-                   numberSumUnidadesForDisplay:="0110000"; 
+                    numberSumUnidadesForDisplay:="0000110"; 
                elsif (playerSUM - 10) = 2 then
-                --    numberSumUnidadesForDisplay:="1101101";
-                   numberSumUnidadesForDisplay:="0010010";
+                    numberSumUnidadesForDisplay:="0100100";
                elsif (playerSUM - 10) = 3 then
-                --    numberSumUnidadesForDisplay:="1111001";
-                   numberSumUnidadesForDisplay:="0000110";
+                    numberSumUnidadesForDisplay:="0110000";
                elsif (playerSUM - 10) = 4 then
-                --    numberSumUnidadesForDisplay:="0110011";
-                   numberSumUnidadesForDisplay:="1001100";
+                    numberSumUnidadesForDisplay:="0011001";
                elsif (playerSUM - 10) = 5 then
-                   numberSumUnidadesForDisplay:="0100100";
-                --    numberSumUnidadesForDisplay:="1011011";
+                    numberSumUnidadesForDisplay:="0010010";
                elsif (playerSUM - 10) = 6 then 
-                --    numberSumUnidadesForDisplay:="1011111";
-                   numberSumUnidadesForDisplay:="0100000";
+                    numberSumUnidadesForDisplay:="0000010";
                elsif (playerSUM - 10) = 7 then
-                --    numberSumUnidadesForDisplay:="1110000";
-                   numberSumUnidadesForDisplay:="0001111";
+                    numberSumUnidadesForDisplay:="1111000";
                elsif (playerSUM - 10) = 8 then
-                --    numberSumUnidadesForDisplay:="1111111";
-                   numberSumUnidadesForDisplay:="0000000";
+                    numberSumUnidadesForDisplay:="0000000";
                elsif (playerSUM - 10) = 9 then
-                --    numberSumUnidadesForDisplay:="1111011";
-                   numberSumUnidadesForDisplay:="0000100";
+                    numberSumUnidadesForDisplay:="0010000";
                else 
-                --    numberSumUnidadesForDisplay:="1111110";
-                   numberSumUnidadesForDisplay:="0000001";
+                    numberSumUnidadesForDisplay:="1000000";
                end if;
            elsif playerSUM  >= 20 and playerSUM < 29 then
                if (playerSUM - 20) = 1 then 
-                --    numberSumUnidadesForDisplay:="0110000";
-                   numberSumUnidadesForDisplay:="1001111";
+                   numberSumUnidadesForDisplay:="1111001";
                elsif (playerSUM - 20) = 2 then
-                --    numberSumUnidadesForDisplay:="1101101";
-                   numberSumUnidadesForDisplay:="0010010";
-               elsif (playerSUM - 20) = 3 then
-                --    numberSumUnidadesForDisplay:="1111001";
-                   numberSumUnidadesForDisplay:="0000110";
-               elsif (playerSUM - 20) = 4 then
-                --    numberSumUnidadesForDisplay:="0110011";
-                   numberSumUnidadesForDisplay:="1001100";
-               elsif (playerSUM - 20) = 5 then
-                --    numberSumUnidadesForDisplay:="1011011";
                    numberSumUnidadesForDisplay:="0100100";
+               elsif (playerSUM - 20) = 3 then
+                   numberSumUnidadesForDisplay:="0110000";
+               elsif (playerSUM - 20) = 4 then
+                   numberSumUnidadesForDisplay:="0011001";
+               elsif (playerSUM - 20) = 5 then
+                   numberSumUnidadesForDisplay:="0010010";
                elsif (playerSUM - 20) = 6 then 
-                --    numberSumUnidadesForDisplay:="1011111";
-                   numberSumUnidadesForDisplay:="0100000";
+                   numberSumUnidadesForDisplay:="0000010";
                elsif (playerSUM - 20) = 7 then
-                --    numberSumUnidadesForDisplay:="1110000";
-                   numberSumUnidadesForDisplay:="0001111";
+                   numberSumUnidadesForDisplay:="1111000";
                elsif (playerSUM - 20) = 8 then
-                --    numberSumUnidadesForDisplay:="1111111";
                    numberSumUnidadesForDisplay:="0000000";
                elsif (playerSUM - 20) = 9 then
-                --    numberSumUnidadesForDisplay:="1111011";
-                   numberSumUnidadesForDisplay:="0000100";
+                   numberSumUnidadesForDisplay:="0010000";
                else 
-                --    numberSumUnidadesForDisplay:="1111110";
-                   numberSumUnidadesForDisplay:="0000001";
+                   numberSumUnidadesForDisplay:="1000000";
                end if;
-           else --No processo principal nunca dará esse else por irá acusar derrota ao ter soma > 21
-            --    numberSumUnidadesForDisplay:="1111110";
-               numberSumUnidadesForDisplay:="0000001";
+           else 
+               numberSumUnidadesForDisplay:="1000000";
            end if;  
            return numberSumUnidadesForDisplay; 
     end function;
+	 
+	function slv_to_int(input_vector: std_logic_vector(3 downto 0)) return integer is
+        begin
+            case input_vector is
+                when "0001" => return 1;
+                when "0010" => return 2;
+                when "0011" => return 3;
+                when "0100" => return 4;
+                when "0101" => return 5;
+                when "0110" => return 6;
+                when "0111" => return 7;
+                when "1000" => return 8;
+                when "1001" => return 9;
+                when "1010" => return 10;
+                when "1011" => return 11;
+                when "1100" => return 12;
+                when "1101" => return 13;
+                when others => return 0; 
+            end case;
+   end function;
    --------------------------------------------------------------------------------------------------
 
     signal clockCount: integer range 0 to 100 := 0;
     signal gameStarted: std_logic := '0';
     signal playerAcum, dealerAcum: integer range 0 to 100 := 0;
     signal usedCardAcum: integer_array := (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+	TYPE estado is (T, I, P, L, D, R, H, S);
+    signal est: estado:= T;
 
-begin
-    process(key(2), key(3)) -- Lembrar de lidar com o caso onde o usuário começa a dar clock sem ter dado start
-    variable userCard: std_logic_vector(3 downto 0) := sw(3) & sw(2) & sw(1) & sw(0); 
-    variable pickedCard: integer range 0 to 100;
-    variable playerSUM, DealerSUM: integer range 0 to 100 := 0; -- Precisa de um range pra FPGA entender
-    variable usedCard: integer_array := (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
     begin
-        if (key(3) = '0') then 
-            -- Reseta tudo
-            gameStarted <= '1';
-            pickedCard := 0;
-            clockCount <= 0;
-            playerSUM := 0;
-            DealerSUM := 0;
-            playerAcum <= 0;
-            dealerAcum <= 0;
-            ledr(2) <= '1';
-            ledr(1) <= '1';
-            ledr(0) <= '1';
-            ledr(9) <= '1'
-
-            -- hex1 <= "0000000";
-            -- hex0 <= "0000000";
-            -- hex3 <= "0000000";
-            hex1 <= "1111111";
-            hex0 <= "1111111";
-            hex3 <= "1111111";
-            usedCardAcum <= (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-
-        elsif (gameStarted = '1') then
-            ledr(9) <= '0'
-            playerSUM := playerAcum;
-            DealerSUM := dealerAcum;
-            usedCard  := usedCardAcum;
-
-            if ((clockCount = 0 OR clockCount = 1) AND key(2) = '0') then
-
-                clockCount <= clockCount + 1;  -- Lembrar que o valor só é atualizado no próximo ciclo
-                if(sw(7) = '0')    then
-                    pickedCard := randomGenerator(usedCard);
+        process(key(2), key(3)) -- key(2) = reset key(3) = clk
+        variable pickedCard: integer range 0 to 100;
+        variable playerSUM, DealerSUM: integer range 0 to 100 := 0; -- Precisa de um range pra FPGA entender
+        variable usedCard: integer_array := (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+        begin	
+            if key(2) = '0' then
+                est <= I;
+                ledr <= "0000000000";
+                playerAcum <= 0;
+                dealerAcum <= 0;
+                usedCardAcum <= (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);				
+            elsif (key(3)'event and key(3) = '0') then
+                if est = T then 
+                    ledr <= "0000000000";
+                    hex3 <= "1111111";
+                    hex1 <= "1111111";
+                    hex0 <= "1111111";
+                elsif est = I then
+					pickedCard := randomGenerator(usedCardAcum);
                     hex3 <= numberDisplayCard(pickedCard);
-                    if pickedCard > 10 then
-                        playerSUM := playerSUM + 10;
-                    elsif pickedCard = 1 then
-                        if playerSUM < 12 then
-                            playerSUM := playerSUM + 10;
-                        else 
-                            playerSUM := playerSUM + 1;
-                        end if;
-                    else
-                        playerSUM := playerSUM + pickedCard;
-                    end if;
-                    usedCard(pickedCard - 1) := usedCard(pickedCard - 1) + 1;
-                else
-                    -- card <= std_logic_vector(to_unsigned(to_integer(unsigned(userCard)), card'length)); -- Corrected for userCard
-                    hex3 <= numberDisplayCard(to_integer(unsigned(userCard)));
-                    if to_integer(unsigned(userCard)) > 10 then
-                       playerSUM := playerSUM + 10;
-                    elsif to_integer(unsigned(userCard)) = 1 then
-                        if playerSUM < 12 then
-                            playerSUM := playerSUM + 10;
-                        else 
-                            playerSUM := playerSUM + 1;
-                        end if;
-                    else
-                        playerSUM := playerSUM + to_integer(unsigned(userCard));
-                    end if;  
-                    playerAcum <= playerSUM;
-                end if; 
-            end if;
-            
-            -- Player dando hit
-            if (sw(9) = '0') then
-                if(sw(7) = '0')    then
-                    pickedCard := randomGenerator(usedCard);
-                    -- card <= std_logic_vector(to_unsigned(pickedCard, card'length)); -- No changes required
+                    hex1 <= numberSumDezenas(pickedCard);
+                    hex0 <= numberSumUnidades(pickedCard);
+                    playerAcum <= playerAcum + pickedCard;
+                    ledr <= "0000000000";
+                    est <= P;
+                elsif est = P then
+					pickedCard := randomGenerator(usedCardAcum);
+                    playerSum :=  playerAcum + pickedCard;
                     hex3 <= numberDisplayCard(pickedCard);
-                    if pickedCard > 10 then
-                        playerSUM := playerSUM + 10;
-                    elsif pickedCard = 1 then
-                        if playerSUM < 12 then
-                            playerSUM := playerSUM + 10;
-                        else 
-                            playerSUM := playerSUM + 1;
-                        end if;
-                    else
-                        playerSUM := playerSUM + pickedCard;
-                    end if;
-                    usedCard(pickedCard - 1) := usedCard(pickedCard - 1) + 1;
-                else
-                    -- card <= std_logic_vector(to_unsigned(to_integer(unsigned(userCard)), card'length)); -- Corrected for userCard
-                    hex3 <= numberDisplayCard(to_integer(unsigned(userCard)));
-                    if to_integer(unsigned(userCard)) > 10 then
-                       playerSUM := playerSUM + 10;
-                    elsif to_integer(unsigned(userCard)) = 1 then
-                        if playerSUM < 12 then
-                            playerSUM := playerSUM + 10;
-                        else 
-                            playerSUM := playerSUM + 1;
-                        end if;
-                    else
-                        playerSUM := playerSUM + to_integer(unsigned(userCard));
-                    end if;  
-                end if; 
-
-
-            end if;
-
-            hex0 <= numberSumUnidades(playerSUM);
-            hex1 <= numberSumDezenas(playerSUM);
-
-            if (playerSUM = 21) then
-                ledr(2) <= '0'; -- Win
-                ledr(1) <= '1'; -- Tie
-                ledr(0) <= '1'; -- Lose
-            elsif (playerSUM > 21) then
-                ledr(2) <= '1';
-                ledr(1) <= '1';
-                ledr(0) <= '0';
-            end if;
-
-            -- Se passou daqui, começa a jogada do dealer
-
-            if (sw(8) = '0') then 
-                if (DealerSUM <= 17 AND key(2) = '0') then -- Precisamos verificar bem a lógica desse bloco, fiz na correria e não sei se está certo
-                    if(sw(7) = '0') then
-                        pickedCard := randomGenerator(usedCard);
-                        hex3 <= numberDisplayCard(pickedCard);
-                        
-                        if pickedCard > 10 then
-                            DealerSUM := DealerSUM + 10;
-                        elsif pickedCard = 1 then
-                            if DealerSUM < 12 then
-                                DealerSUM := DealerSUM + 10;
-                            else 
-                                DealerSUM := DealerSUM + 1;
-                            end if;
-                        else
-                            DealerSUM := DealerSUM + pickedCard;
-                        end if;
-                        usedCard(pickedCard - 1) := usedCard(pickedCard - 1) + 1;
+                    hex1 <= numberSumDezenas(playerSum);
+                    hex0 <= numberSumUnidades(playerSum);
+                    if playerSUM > 21 then
+                        ledr <= "0000000001";
+                        est <= T;
+                    elsif playerSUM = 21 then
+                        ledr <= "0000000100";
+                        est <= T;
                     else 
-                        hex3 <= numberDisplayCard(to_integer(unsigned(userCard)));
-                        if to_integer(unsigned(userCard)) > 10 then
-                            DealerSUM := DealerSUM + 10;
-                        elsif to_integer(unsigned(userCard)) = 1 then
-                            if DealerSUM < 12 then
-                                DealerSUM := DealerSUM + 10;
-                            else 
-                                DealerSUM := DealerSUM + 1;
-                            end if;
-                        else
-                            DealerSUM := DealerSUM + to_integer(unsigned(userCard));
-                        end if;  
+                        ledr <= "0000000000";
+                        est <= L;
                     end if;
-
-                elsif (DealerSUM <= 17) then
-
-                    if (DealerSUM > 21) then
-                        ledr(2) <= '0';
-                        ledr(1) <= '1';
-                        ledr(0) <= '1';
+                elsif est = L then
+                    if sw(5) = '1' and sw(6) = '0' then
+                        pickedCard := randomGenerator(usedCardAcum);
+                        playerSum :=  playerAcum + pickedCard;
+                        playerAcum <= playerAcum + pickedCard;
+                        hex3 <= numberDisplayCard(pickedCard);
+                        hex1 <= numberSumDezenas(playerSum);
+                        hex0 <= numberSumUnidades(playerSum);
+                        if playerSUM > 21 then
+                            ledr <= "0000000001";
+                            est <= T;
+                        elsif playerSUM = 21 then
+                            ledr <= "0000000100";
+                            est <= T;
+                        else 
+                            ledr <= "0000000000";
+                        end if;
+                    elsif sw(6) = '1' and sw(5) = '0' then
+                        est <= D;
+                    else 
+                        est <= T;
                     end if;
-        
-                    if (DealerSUM = PlayerSUM) then
-                        ledr(2) <= '1';
-                        ledr(1) <= '0';
-                        ledr(0) <= '1';
-                    end if;
-        
-                    if (PlayerSUM > DealerSUM) then
-                        ledr(2) <= '0';
-                        ledr(1) <= '1';
-                        ledr(0) <= '1';
-                    end if;
-
+                elsif est = D then
+                    pickedCard := randomGenerator(usedCardAcum);
+                    hex3 <= numberDisplayCard(pickedCard);
+                    hex1 <= numberSumDezenas(pickedCard);
+                    hex0 <= numberSumUnidades(pickedCard);
+                    dealerAcum <= dealerAcum + pickedCard;
+                    DealerSUM := dealerAcum + pickedCard;
+                    playerSUM := playerAcum;
+                    if DealerSUM > 21 then
+                        ledr <= "0000000100";
+                        est <= T;
+                    elsif DealerSUM = 21 then
+                        ledr <= "0000000001";
+                        est <= T;
+                    elsif DealerSUM <= 17 then
+                        est <= D;
+                    else 
+                        ledr <= "0000000010";
+                        est <= T;
+                    end if;		 
+                else 
+                    ledr<="1111111111";		
                 end if;
             end if;
-            playerAcum <= PlayerSUM;
-            dealerAcum <= dealerSUM;
-            usedCardAcum <= usedCard;
-        end if;
-    end process;
+        end process;                   
 end behaviour;
-
-
